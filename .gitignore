@@ -1,0 +1,116 @@
+# ====== SISTEMA OPERATIVO ======
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+.Trash-*
+
+# ====== EDITORES ======
+# VSCode
+.vscode/
+.history/
+.idea/
+*.code-workspace
+
+# Eclipse / IntelliJ
+.project
+.classpath
+.settings/
+*.iml
+*.ipr
+*.iws
+out/
+
+# ====== BACKEND ======
+# --- Java / Maven / Gradle ---
+target/
+build/
+.gradle/
+!gradle-wrapper.jar
+
+# --- .NET / C# ---
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+.env/
+venv/
+.venv/
+
+# --- Node.js / JavaScript ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
+
+# --- Flask / Django ---
+instance/
+db.sqlite3
+*.log
+
+# ====== FRONTEND ======
+# Angular / React / Vue
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# ====== BASE DE DATOS / DOCKER ======
+*.db
+*.sqlite
+docker-compose.override.yml
+.env.docker
+
+# ====== ARCHIVOS TEMPORALES ======
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.orig
+
+# ====== ARCHIVOS DE COMPILACIÓN ======
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.out
+
+# ====== DOCUMENTOS ======
+# No ignores los PDF o DOCX si son parte del trabajo, pero puedes excluir backups:
+~$*.doc*
+~$*.xls*
+~$*.ppt*
+
+# ====== OTROS ======
+# Archivos de prueba locales
+test-output/
+__MACOSX/
+
+# ====== NETBEANS ======
+nbproject/private/
+**/nbproject/private/
+nbbuild/
+nbdist/
+.nb-gradle/
