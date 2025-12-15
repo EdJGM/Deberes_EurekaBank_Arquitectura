@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Eurekabank_Maui.ViewModels"
+             xmlns:models="clr-namespace:Eurekabank_Maui.Models"
+             x:Class="Eurekabank_Maui.Views.LoginPage"
+             x:DataType="viewmodels:LoginViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#F5F5F5">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="20">
+            
+            <!-- Logo y Título -->
+            <VerticalStackLayout Spacing="10" Margin="0,30,0,20">
+                <Image Source="bank_icon.png" 
+                       HeightRequest="80"
+                       WidthRequest="80"
+                       HorizontalOptions="Center"/>
+                
+                <Label Text="EUREKABANK"
+                       FontSize="32"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"
+                       TextColor="#2C3E50"/>
+                
+                <Label Text="Sistema Bancario Móvil"
+                       FontSize="16"
+                       HorizontalOptions="Center"
+                       TextColor="#7F8C8D"/>
+            </VerticalStackLayout>
+
+            <!-- Selección de Servidor -->
+            <Frame CornerRadius="15" 
+                   HasShadow="True" 
+                   Padding="20"
+                   BackgroundColor="White">
+                <VerticalStackLayout Spacing="15">
+                    
+                    <Label Text="Seleccione el Servidor"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#2C3E50"/>
+                    
+                    <CollectionView ItemsSource="{Binding Servidores}"
+                                    SelectionMode="Single"
+                                    SelectedItem="{Binding ServidorSeleccionado}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:ServidorConfig">
+                                <Frame Padding="15"
+                                       Margin="0,5"
+                                       CornerRadius="10"
+                                       HasShadow="False"
+                                       BorderColor="{Binding IconoColor}"
+                                       BackgroundColor="#F8F9FA">
+                                    
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="15">
+                                        
+                                        <!-- Indicador de color -->
+                                        <BoxView Grid.Column="0"
+                                                 WidthRequest="4"
+                                                 CornerRadius="2"
+                                                 BackgroundColor="{Binding IconoColor}"/>
+                                        
+                                        <!-- Información del servidor -->
+                                        <VerticalStackLayout Grid.Column="1" Spacing="5">
+                                            <Label Text="{Binding Nombre}"
+                                                   FontSize="16"
+                                                   FontAttributes="Bold"
+                                                   TextColor="#2C3E50"/>
+                                            
+                                            <Label Text="{Binding Descripcion}"
+                                                   FontSize="12"
+                                                   TextColor="#7F8C8D"/>
+                                            
+                                            <Label Text="{Binding Tecnologia}"
+                                                   FontSize="10"
+                                                   TextColor="#95A5A6"/>
+                                        </VerticalStackLayout>
+                                        
+                                        <!-- Icono de selección -->
+                                        <Label Grid.Column="2"
+                                               Text="✓"
+                                               FontSize="24"
+                                               TextColor="{Binding IconoColor}"
+                                               VerticalOptions="Center"
+                                               IsVisible="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:LoginViewModel}}, Path=ServidorSeleccionado, Converter={StaticResource EqualConverter}, ConverterParameter={Binding .}}"/>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <!-- Botón verificar conexión -->
+                    <Button Text="🔍 Verificar Conexión"
+                            Command="{Binding VerificarConexionCommand}"
+                            BackgroundColor="#3498DB"
+                            TextColor="White"
+                            CornerRadius="10"
+                            HeightRequest="45"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Formulario de Login -->
+            <Frame CornerRadius="15" 
+                   HasShadow="True" 
+                   Padding="20"
+                   BackgroundColor="White">
+                <VerticalStackLayout Spacing="15">
+                    
+                    <Label Text="Credenciales de Acceso"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#2C3E50"/>
+                    
+                    <!-- Usuario -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Usuario"
+                               FontSize="14"
+                               TextColor="#7F8C8D"/>
+                        <Frame Padding="0" 
+                               CornerRadius="10" 
+                               HasShadow="False"
+                               BorderColor="#E0E0E0">
+                            <Entry Placeholder="Ingrese su usuario"
+                                   Text="{Binding Username}"
+                                   Margin="10,0"/>
+                        </Frame>
+                    </VerticalStackLayout>
+                    
+                    <!-- Contraseña -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Contraseña"
+                               FontSize="14"
+                               TextColor="#7F8C8D"/>
+                        <Frame Padding="0" 
+                               CornerRadius="10" 
+                               HasShadow="False"
+                               BorderColor="#E0E0E0">
+                            <Entry Placeholder="Ingrese su contraseña"
+                                   Text="{Binding Password}"
+                                   IsPassword="True"
+                                   Margin="10,0"/>
+                        </Frame>
+                    </VerticalStackLayout>
+
+                    <!-- Mensaje de error -->
+                    <Frame IsVisible="{Binding MostrarError}"
+                           BackgroundColor="#FFEBEE"
+                           BorderColor="#F44336"
+                           CornerRadius="10"
+                           Padding="15"
+                           HasShadow="False">
+                        <Label Text="{Binding MensajeError}"
+                               TextColor="#C62828"
+                               FontSize="12"/>
+                    </Frame>
+
+                    <!-- Botón Login -->
+                    <Button Text="Iniciar Sesión"
+                            Command="{Binding LoginCommand}"
+                            BackgroundColor="#27AE60"
+                            TextColor="White"
+                            CornerRadius="10"
+                            HeightRequest="50"
+                            FontSize="16"
+                            FontAttributes="Bold"/>
+                    
+                    <!-- Indicador de carga -->
+                    <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                       IsVisible="{Binding IsBusy}"
+                                       Color="#27AE60"
+                                       HeightRequest="40"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Información de prueba -->
+            <Frame CornerRadius="15" 
+                   HasShadow="True" 
+                   Padding="20"
+                   BackgroundColor="#FFF3E0"
+                   BorderColor="#FF9800">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="💡 Usuarios de Prueba"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="#E65100"/>
+                    
+                    <Label FontSize="12" TextColor="#E65100">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="• internet / internet" FontAttributes="Bold"/>
+                                <Span Text="&#x0a;• MONSTER / MONSTER9" FontAttributes="Bold"/>
+                                <Span Text="&#x0a;&#x0a;Cuentas: 00100001, 00200001"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Label Text="© 2024 Eurekabank"
+                   FontSize="12"
+                   HorizontalOptions="Center"
+                   TextColor="#BDC3C7"
+                   Margin="0,20,0,0"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

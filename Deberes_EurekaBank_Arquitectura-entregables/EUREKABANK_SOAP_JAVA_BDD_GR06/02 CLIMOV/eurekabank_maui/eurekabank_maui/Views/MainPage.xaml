@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Eurekabank_Maui.ViewModels"
+             xmlns:models="clr-namespace:Eurekabank_Maui.Models"
+             x:Class="Eurekabank_Maui.Views.MainPage"
+             x:DataType="viewmodels:MainViewModel"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            
+            <!-- Header con información del servidor -->
+            <Frame CornerRadius="15" 
+                   Padding="20"
+                   BackgroundColor="{Binding ServidorInfo.IconoColor}"
+                   HasShadow="True">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <VerticalStackLayout Grid.Column="0" Spacing="5">
+                        <Label Text="{Binding ServidorInfo.Nombre}"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="White"/>
+                        <Label Text="{Binding ServidorInfo.Tecnologia}"
+                               FontSize="12"
+                               TextColor="White"
+                               Opacity="0.9"/>
+                    </VerticalStackLayout>
+                    
+                    <Button Grid.Column="1"
+                            Text="Cerrar Sesión"
+                            Command="{Binding CerrarSesionCommand}"
+                            BackgroundColor="White"
+                            TextColor="{Binding ServidorInfo.IconoColor}"
+                            CornerRadius="10"
+                            HeightRequest="40"
+                            FontSize="12"/>
+                </Grid>
+            </Frame>
+
+            <!-- Sección de Consulta -->
+            <Frame CornerRadius="15" 
+                   HasShadow="True" 
+                   Padding="20"
+                   BackgroundColor="White">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="📊 Consultar Movimientos"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#2C3E50"/>
+                    
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Número de Cuenta"
+                               FontSize="14"
+                               TextColor="#7F8C8D"/>
+                        <Frame Padding="0" 
+                               CornerRadius="10" 
+                               HasShadow="False"
+                               BorderColor="#E0E0E0">
+                            <Entry Placeholder="Ej: 00100001"
+                                   Text="{Binding Cuenta}"
+                                   Keyboard="Numeric"
+                                   Margin="10,0"/>
+                        </Frame>
+                    </VerticalStackLayout>
+                    
+                    <Button Text="Consultar"
+                            Command="{Binding ConsultarCommand}"
+                            BackgroundColor="#3498DB"
+                            TextColor="White"
+                            CornerRadius="10"
+                            HeightRequest="45"/>
+                    
+                    <!-- Mensaje de estado -->
+                    <Frame IsVisible="{Binding MostrarMensaje}"
+                           BackgroundColor="#E8F5E9"
+                           BorderColor="#4CAF50"
+                           CornerRadius="10"
+                           Padding="15"
+                           HasShadow="False">
+                        <Label Text="{Binding MensajeEstado}"
+                               TextColor="#2E7D32"
+                               FontSize="12"/>
+                    </Frame>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Lista de Movimientos -->
+            <Frame CornerRadius="15" 
+                   HasShadow="True" 
+                   Padding="20"
+                   BackgroundColor="White"
+                   IsVisible="{Binding Movimientos.Count, Converter={StaticResource GreaterThanZeroConverter}}">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Historial de Movimientos"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#2C3E50"/>
+                    
+                    <CollectionView ItemsSource="{Binding Movimientos}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Movimiento">
+                                <Frame Padding="15"
+                                       Margin="0,5"
+                                       CornerRadius="10"
+                                       BorderColor="#E0E0E0"
+                                       BackgroundColor="#F8F9FA"
+                                       HasShadow="False">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                        
+                                        <BoxView Grid.Column="0"
+                                                 WidthRequest="4"
+                                                 CornerRadius="2"
+                                                 BackgroundColor="{Binding AccionColor}"/>
+                                        
+                                        <VerticalStackLayout Grid.Column="1" Spacing="5">
+                                            <Label Text="{Binding Tipo}"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold"
+                                                   TextColor="#2C3E50"/>
+                                            
+                                            <Label Text="{Binding FechaFormateada}"
+                                                   FontSize="12"
+                                                   TextColor="#7F8C8D"/>
+                                            
+                                            <Label FontSize="11" TextColor="#95A5A6">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="Cuenta: "/>
+                                                        <Span Text="{Binding Cuenta}" FontAttributes="Bold"/>
+                                                        <Span Text=" | Mov #"/>
+                                                        <Span Text="{Binding NroMov}"/>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </VerticalStackLayout>
+                                        
+                                        <Label Grid.Column="2"
+                                               Text="{Binding ImporteFormateado}"
+                                               FontSize="16"
+                                               FontAttributes="Bold"
+                                               TextColor="{Binding AccionColor}"
+                                               VerticalOptions="Center"/>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Sección de Operaciones -->
+            <Frame CornerRadius="15" 
+                   HasShadow="True" 
+                   Padding="20"
+                   BackgroundColor="White">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="💰 Realizar Operaciones"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#2C3E50"/>
+                    
+                    <!-- Importe -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Importe (S/.)"
+                               FontSize="14"
+                               TextColor="#7F8C8D"/>
+                        <Frame Padding="0" 
+                               CornerRadius="10" 
+                               HasShadow="False"
+                               BorderColor="#E0E0E0">
+                            <Entry Placeholder="0.00"
+                                   Text="{Binding Importe}"
+                                   Keyboard="Numeric"
+                                   Margin="10,0"/>
+                        </Frame>
+                    </VerticalStackLayout>
+                    
+                    <!-- Botones de Operaciones -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Button Grid.Column="0"
+                                Text="➕ Depósito"
+                                Command="{Binding DepositoCommand}"
+                                BackgroundColor="#27AE60"
+                                TextColor="White"
+                                CornerRadius="10"
+                                HeightRequest="45"/>
+                        
+                        <Button Grid.Column="1"
+                                Text="➖ Retiro"
+                                Command="{Binding RetiroCommand}"
+                                BackgroundColor="#E74C3C"
+                                TextColor="White"
+                                CornerRadius="10"
+                                HeightRequest="45"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Sección de Transferencias -->
+            <Frame CornerRadius="15" 
+                   HasShadow="True" 
+                   Padding="20"
+                   BackgroundColor="White">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="↔️ Transferencia"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#2C3E50"/>
+                    
+                    <!-- Cuenta Destino -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Cuenta Destino"
+                               FontSize="14"
+                               TextColor="#7F8C8D"/>
+                        <Frame Padding="0" 
+                               CornerRadius="10" 
+                               HasShadow="False"
+                               BorderColor="#E0E0E0">
+                            <Entry Placeholder="Ej: 00200001"
+                                   Text="{Binding CuentaDestino}"
+                                   Keyboard="Numeric"
+                                   Margin="10,0"/>
+                        </Frame>
+                    </VerticalStackLayout>
+                    
+                    <Button Text="Transferir"
+                            Command="{Binding TransferenciaCommand}"
+                            BackgroundColor="#9B59B6"
+                            TextColor="White"
+                            CornerRadius="10"
+                            HeightRequest="45"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Indicador de carga -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="#3498DB"
+                               HeightRequest="50"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

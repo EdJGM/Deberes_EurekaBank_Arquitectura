@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="Eurekabank_Soap_Dotnet.ec.edu.monster.ws.EurekabankWS" CodeBehind="EurekabankWS.svc.cs" %>

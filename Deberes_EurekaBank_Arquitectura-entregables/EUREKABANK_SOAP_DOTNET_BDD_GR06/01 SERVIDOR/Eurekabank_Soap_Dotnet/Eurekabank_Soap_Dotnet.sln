@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36616.10 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eurekabank_Soap_Dotnet", "Eurekabank_Soap_Dotnet\Eurekabank_Soap_Dotnet.csproj", "{DDBAB59A-74AC-4016-8B2A-9BDC7B7BEFDB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DDBAB59A-74AC-4016-8B2A-9BDC7B7BEFDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDBAB59A-74AC-4016-8B2A-9BDC7B7BEFDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDBAB59A-74AC-4016-8B2A-9BDC7B7BEFDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDBAB59A-74AC-4016-8B2A-9BDC7B7BEFDB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0C86E831-AB0A-4A46-8A72-450E25FC1E06}
+	EndGlobalSection
+EndGlobal

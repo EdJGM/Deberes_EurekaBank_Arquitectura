@@ -12,9 +12,9 @@ import java.sql.SQLException;
  * @author josue
  */
 public class AccesoDB {
-    private static final String URL = "jdbc:mysql://localhost:3306/eurekabank_restfull_java?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
-    private static final String USER = "root";
-    private static final String PASS = "root";
+    private static final String URL = "jdbc:mysql://34.39.163.203:3306/eurekabank?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+    private static final String USER = "monster";
+    private static final String PASS = "monster9";
 
     public AccesoDB() {
     }
