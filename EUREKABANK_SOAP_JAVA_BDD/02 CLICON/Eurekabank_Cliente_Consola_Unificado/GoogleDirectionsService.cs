@@ -10,7 +10,7 @@ namespace Eurekabank_Cliente_Consola_Unificado.Services
     public class GoogleDirectionsService
     {
         private readonly HttpClient _httpClient;
-        private const string GOOGLE_API_KEY = "AIzaSyAWAuySN89hBmBhmOJnINRSWFOEP4TLUdY"; // Reemplazar con tu API Key
+        private const string GOOGLE_API_KEY = "KEY"; // Reemplazar con tu API Key
         private const string DIRECTIONS_URL = "https://maps.googleapis.com/maps/api/directions/json";
 
         public GoogleDirectionsService()

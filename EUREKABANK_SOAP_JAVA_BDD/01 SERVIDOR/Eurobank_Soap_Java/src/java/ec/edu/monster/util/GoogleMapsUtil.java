@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 public class GoogleMapsUtil {
     
     // Reemplaza con tu API Key de Google Maps
-    private static final String GOOGLE_MAPS_API_KEY = "AIzaSyAWAuySN89hBmBhmOJnINRSWFOEP4TLUdY";
+    private static final String GOOGLE_MAPS_API_KEY = "KEY";
     private static final String GEOCODING_URL = "https://maps.googleapis.com/maps/api/geocode/json";
     private static final String DISTANCE_MATRIX_URL = "https://maps.googleapis.com/maps/api/distancematrix/json";
     
@@ -246,6 +246,6 @@ public class GoogleMapsUtil {
      * @return true si la API Key está configurada
      */
     public static boolean isApiKeyConfigured() {
-        return !GOOGLE_MAPS_API_KEY.equals("AIzaSyAWAuySN89hBmBhmOJnINRSWFOEP4TLUdY");
+        return !GOOGLE_MAPS_API_KEY.equals("KEY");
     }
 }
