@@ -192,7 +192,7 @@ namespace Eurekabank_Cliente_Consola_Unificado.Services
     }
 
     // Modelos para la respuesta de Google Directions API
-    public class RutaDetallada
+    public partial class RutaDetallada
     {
         public string DistanciaTotal { get; set; } = "";
         public string TiempoTotal { get; set; } = "";

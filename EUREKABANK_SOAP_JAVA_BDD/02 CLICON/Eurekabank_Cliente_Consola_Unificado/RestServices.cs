@@ -10,7 +10,7 @@ namespace Eurekabank_Cliente_Consola_Unificado.Services
 {
     public static class GlobalConfigREST
     {
-        public const string IpServidorREST = "10.40.20.70";
+        public const string IpServidorREST = "localhost";
     }
     /// <summary>
     /// Cliente REST para servidor .NET

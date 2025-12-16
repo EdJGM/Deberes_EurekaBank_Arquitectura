@@ -12,6 +12,8 @@ namespace Eurekabank_Cliente_Consola_Unificado
         private static TipoServidor servidorSeleccionado;
         private static SucursalSoapService? servicioSucursales;
         private static GoogleDirectionsService? serviceDirecciones;
+        private static SucursalesRestDotNetService? servicioSucursalesRestDotNet;
+        private static GoogleDirectionsRestDotNetService? serviceDireccionesRestDotNet;
         private static bool autenticado = false;
         private static string usuarioActual = "";
 
@@ -103,6 +105,12 @@ namespace Eurekabank_Cliente_Consola_Unificado
             {
                 servicioSucursales = new SucursalSoapService();
                 serviceDirecciones = new GoogleDirectionsService();
+            }
+
+            if (servidorSeleccionado == TipoServidor.REST_DOTNET)
+            {
+                servicioSucursalesRestDotNet = new SucursalesRestDotNetService();
+                serviceDireccionesRestDotNet = new GoogleDirectionsRestDotNetService(servicioSucursalesRestDotNet);
             }
 
             if (servicioActual == null)
@@ -550,28 +558,52 @@ namespace Eurekabank_Cliente_Consola_Unificado
                 switch (opcion)
                 {
                     case 1:
-                        await ListarSucursales();
+                        if (servidorSeleccionado == TipoServidor.REST_DOTNET)
+                            await ListarSucursalesRestDotNet();
+                        else
+                            await ListarSucursales(); // SOAP Java existente
                         break;
                     case 2:
-                        await BuscarSucursal();
+                        if (servidorSeleccionado == TipoServidor.REST_DOTNET)
+                            await BuscarSucursalRestDotNet();
+                        else
+                            await BuscarSucursal(); // SOAP Java existente
                         break;
                     case 3:
-                        await CrearSucursal();
+                        if (servidorSeleccionado == TipoServidor.REST_DOTNET)
+                            await CrearSucursalRestDotNet();
+                        else
+                            await CrearSucursal(); // SOAP Java existente
                         break;
                     case 4:
-                        await ActualizarSucursal();
+                        if (servidorSeleccionado == TipoServidor.REST_DOTNET)
+                            await ActualizarSucursalRestDotNet();
+                        else
+                            await ActualizarSucursal(); // SOAP Java existente
                         break;
                     case 5:
-                        await EliminarSucursal();
+                        if (servidorSeleccionado == TipoServidor.REST_DOTNET)
+                            await EliminarSucursalRestDotNet();
+                        else
+                            await EliminarSucursal(); // SOAP Java existente
                         break;
                     case 6:
-                        await CalcularDistanciaEntreSucursales();
+                        if (servidorSeleccionado == TipoServidor.REST_DOTNET)
+                            await CalcularDistanciaEntreSucursalesRestDotNet();
+                        else
+                            await CalcularDistanciaEntreSucursales(); // SOAP Java existente
                         break;
                     case 7:
-                        await EncontrarSucursalMasCercana();
+                        if (servidorSeleccionado == TipoServidor.REST_DOTNET)
+                            await EncontrarSucursalMasCercanaRestDotNet();
+                        else
+                            await EncontrarSucursalMasCercana(); // SOAP Java existente
                         break;
                     case 8:
-                        await ObtenerDireccionesASucursal();
+                        if (servidorSeleccionado == TipoServidor.REST_DOTNET)
+                            await ObtenerDireccionesASucursalRestDotNet();
+                        else
+                            await ObtenerDireccionesASucursal(); // SOAP Java existente
                         break;
                     case 9:
                         return; // Volver al menú principal
@@ -1284,6 +1316,688 @@ namespace Eurekabank_Cliente_Consola_Unificado
                 Console.WriteLine($"     📏 {paso.Distancia} • ⏱️ {paso.Tiempo}");
                 Console.ResetColor();
             }
+        }
+
+        // ===============================================================
+        // MÉTODOS NUEVOS PARA REST .NET
+        // ===============================================================
+
+        static async Task ListarSucursalesRestDotNet()
+        {
+            Console.Clear();
+            MostrarEncabezado("📋 LISTAR SUCURSALES");
+
+            Console.WriteLine();
+            Console.Write("🔍 Consultando sucursales");
+            for (int i = 0; i < 3; i++)
+            {
+                Console.Write(".");
+                await Task.Delay(300);
+            }
+            Console.WriteLine();
+
+            var resultado = await servicioSucursalesRestDotNet!.ListarSucursales();
+
+            if (resultado.Exito && resultado.Data is List<Sucursal> sucursales)
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"✅ {resultado.Mensaje}");
+                Console.ResetColor();
+
+                if (sucursales.Count > 0)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("┌─────┬─────────────────────────┬──────────────┬─────────────────────────────┬──────────────┬─────────────┐");
+                    Console.WriteLine("│ Cód │        Nombre           │    Ciudad    │          Dirección          │   Teléfono   │   Estado    │");
+                    Console.WriteLine("├─────┼─────────────────────────┼──────────────┼─────────────────────────────┼──────────────┼─────────────┤");
+
+                    foreach (var sucursal in sucursales)
+                    {
+                        Console.WriteLine($"│ {sucursal.Codigo,-3} │ {sucursal.Nombre,-23} │ {sucursal.Ciudad,-12} │ {sucursal.Direccion,-27} │ {sucursal.Telefono,-12} │ {sucursal.Estado,-11} │");
+                    }
+
+                    Console.WriteLine("└─────┴─────────────────────────┴──────────────┴─────────────────────────────┴──────────────┴─────────────┘");
+                }
+                else
+                {
+                    Console.WriteLine("ℹ️  No hay sucursales registradas.");
+                }
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"❌ {resultado.Mensaje}");
+                Console.ResetColor();
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Presione cualquier tecla para continuar...");
+            Console.ReadKey();
+        }
+
+        static async Task BuscarSucursalRestDotNet()
+        {
+            Console.Clear();
+            MostrarEncabezado("🔍 BUSCAR SUCURSAL");
+
+            Console.Write("Ingrese el código de la sucursal: ");
+            string? codigo = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(codigo))
+            {
+                Console.WriteLine("❌ Código de sucursal inválido.");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.WriteLine();
+            Console.Write("🔍 Buscando sucursal");
+            for (int i = 0; i < 3; i++)
+            {
+                Console.Write(".");
+                await Task.Delay(300);
+            }
+            Console.WriteLine();
+
+            var resultado = await servicioSucursalesRestDotNet!.ObtenerSucursal(codigo);
+
+            if (resultado.Exito && resultado.Data is Sucursal s)
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("✅ Sucursal encontrada:");
+                Console.ResetColor();
+                Console.WriteLine();
+
+                Console.WriteLine($"📋 Código:      {s.Codigo}");
+                Console.WriteLine($"🏢 Nombre:      {s.Nombre}");
+                Console.WriteLine($"🌆 Ciudad:      {s.Ciudad}");
+                Console.WriteLine($"📍 Dirección:   {s.Direccion}");
+                Console.WriteLine($"📞 Teléfono:    {s.Telefono}");
+                Console.WriteLine($"📧 Email:       {s.Email}");
+                Console.WriteLine($"📊 Estado:      {s.Estado}");
+                Console.WriteLine($"🗺️  Coordenadas: {s.Latitud:F6}, {s.Longitud:F6}");
+                Console.WriteLine($"🏦 Cuentas:     {s.ContadorCuentas}");
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"❌ {resultado.Mensaje}");
+                Console.ResetColor();
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Presione cualquier tecla para continuar...");
+            Console.ReadKey();
+        }
+
+        static async Task CrearSucursalRestDotNet()
+        {
+            Console.Clear();
+            MostrarEncabezado("➕ CREAR NUEVA SUCURSAL");
+
+            try
+            {
+                Console.WriteLine("Ingrese los datos de la nueva sucursal:");
+                Console.WriteLine();
+
+                Console.Write("📋 Código (3 caracteres): ");
+                string codigo = Console.ReadLine() ?? "";
+
+                Console.Write("🏢 Nombre: ");
+                string nombre = Console.ReadLine() ?? "";
+
+                Console.Write("🌆 Ciudad: ");
+                string ciudad = Console.ReadLine() ?? "";
+
+                Console.Write("📍 Dirección: ");
+                string direccion = Console.ReadLine() ?? "";
+
+                Console.Write("📞 Teléfono: ");
+                string telefono = Console.ReadLine() ?? "";
+
+                Console.Write("📧 Email: ");
+                string email = Console.ReadLine() ?? "";
+
+                Console.Write("🗺️  Latitud: ");
+                if (!double.TryParse(Console.ReadLine(), out double latitud))
+                {
+                    Console.WriteLine("❌ Latitud inválida.");
+                    Console.ReadKey();
+                    return;
+                }
+
+                Console.Write("🗺️  Longitud: ");
+                if (!double.TryParse(Console.ReadLine(), out double longitud))
+                {
+                    Console.WriteLine("❌ Longitud inválida.");
+                    Console.ReadKey();
+                    return;
+                }
+
+                var nuevaSucursal = new Services.SucursalRequest
+                {
+                    Codigo = codigo,
+                    Nombre = nombre,
+                    Ciudad = ciudad,
+                    Direccion = direccion,
+                    Telefono = telefono,
+                    Email = email,
+                    Latitud = latitud,
+                    Longitud = longitud,
+                    ContadorCuentas = 0,
+                    Estado = "ACTIVO"
+                };
+
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"⚠️  Va a crear la sucursal '{nombre}' con código '{codigo}'");
+                Console.ResetColor();
+                Console.Write("¿Confirma la operación? (S/N): ");
+
+                if (Console.ReadLine()?.ToUpper() != "S")
+                {
+                    Console.WriteLine("❌ Operación cancelada.");
+                    Console.ReadKey();
+                    return;
+                }
+
+                Console.WriteLine();
+                Console.Write("📄 Creando sucursal");
+                for (int i = 0; i < 3; i++)
+                {
+                    Console.Write(".");
+                    await Task.Delay(300);
+                }
+                Console.WriteLine();
+
+                var resultado = await servicioSucursalesRestDotNet!.CrearSucursal(nuevaSucursal);
+
+                if (resultado.Exito)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"✅ {resultado.Mensaje}");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"❌ {resultado.Mensaje}");
+                    Console.ResetColor();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"❌ Error: {ex.Message}");
+                Console.ResetColor();
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Presione cualquier tecla para continuar...");
+            Console.ReadKey();
+        }
+
+        static async Task ActualizarSucursalRestDotNet()
+        {
+            Console.Clear();
+            MostrarEncabezado("📝 ACTUALIZAR SUCURSAL");
+
+            Console.Write("Ingrese el código de la sucursal a actualizar: ");
+            string? codigo = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(codigo))
+            {
+                Console.WriteLine("❌ Código de sucursal inválido.");
+                Console.ReadKey();
+                return;
+            }
+
+            // Primero buscar la sucursal
+            var resultadoBusqueda = await servicioSucursalesRestDotNet!.ObtenerSucursal(codigo);
+
+            if (!resultadoBusqueda.Exito || resultadoBusqueda.Data is not Sucursal sucursal)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"❌ Sucursal no encontrada: {resultadoBusqueda.Mensaje}");
+                Console.ResetColor();
+                Console.ReadKey();
+                return;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Sucursal encontrada. Presione ENTER para mantener el valor actual:");
+            Console.WriteLine();
+
+            Console.Write($"🏢 Nombre [{sucursal.Nombre}]: ");
+            string nombre = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(nombre)) sucursal.Nombre = nombre;
+
+            Console.Write($"🌆 Ciudad [{sucursal.Ciudad}]: ");
+            string ciudad = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(ciudad)) sucursal.Ciudad = ciudad;
+
+            Console.Write($"📍 Dirección [{sucursal.Direccion}]: ");
+            string direccion = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(direccion)) sucursal.Direccion = direccion;
+
+            Console.Write($"📞 Teléfono [{sucursal.Telefono}]: ");
+            string telefono = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(telefono)) sucursal.Telefono = telefono;
+
+            Console.Write($"📧 Email [{sucursal.Email}]: ");
+            string email = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(email)) sucursal.Email = email;
+
+            Console.Write($"📊 Estado [{sucursal.Estado}]: ");
+            string estado = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(estado)) sucursal.Estado = estado;
+
+            var sucursalRequest = new Services.SucursalRequest
+            {
+                Codigo = sucursal.Codigo,
+                Nombre = sucursal.Nombre,
+                Ciudad = sucursal.Ciudad,
+                Direccion = sucursal.Direccion,
+                Telefono = sucursal.Telefono,
+                Email = sucursal.Email,
+                ContadorCuentas = sucursal.ContadorCuentas,
+                Latitud = sucursal.Latitud,
+                Longitud = sucursal.Longitud,
+                Estado = sucursal.Estado
+            };
+
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"⚠️  Va a actualizar la sucursal '{sucursal.Nombre}'");
+            Console.ResetColor();
+            Console.Write("¿Confirma la operación? (S/N): ");
+
+            if (Console.ReadLine()?.ToUpper() != "S")
+            {
+                Console.WriteLine("❌ Operación cancelada.");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.WriteLine();
+            Console.Write("📄 Actualizando sucursal");
+            for (int i = 0; i < 3; i++)
+            {
+                Console.Write(".");
+                await Task.Delay(300);
+            }
+            Console.WriteLine();
+
+            var resultado = await servicioSucursalesRestDotNet.ActualizarSucursal(codigo, sucursalRequest);
+
+            if (resultado.Exito)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"✅ {resultado.Mensaje}");
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"❌ {resultado.Mensaje}");
+                Console.ResetColor();
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Presione cualquier tecla para continuar...");
+            Console.ReadKey();
+        }
+
+        static async Task EliminarSucursalRestDotNet()
+        {
+            Console.Clear();
+            MostrarEncabezado("🗑️ ELIMINAR SUCURSAL");
+
+            Console.Write("Ingrese el código de la sucursal a eliminar: ");
+            string? codigo = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(codigo))
+            {
+                Console.WriteLine("❌ Código de sucursal inválido.");
+                Console.ReadKey();
+                return;
+            }
+
+            // Primero buscar la sucursal para mostrar información
+            var resultadoBusqueda = await servicioSucursalesRestDotNet!.ObtenerSucursal(codigo);
+
+            if (!resultadoBusqueda.Exito || resultadoBusqueda.Data is not Sucursal sucursal)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"❌ Sucursal no encontrada: {resultadoBusqueda.Mensaje}");
+                Console.ResetColor();
+                Console.ReadKey();
+                return;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Sucursal a eliminar:");
+            Console.WriteLine($"🏢 {sucursal.Codigo} - {sucursal.Nombre} ({sucursal.Ciudad})");
+            Console.WriteLine();
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"⚠️  ATENCIÓN: Va a eliminar (desactivar) la sucursal '{sucursal.Nombre}'");
+            Console.WriteLine("     Esta operación cambiará el estado a INACTIVO.");
+            Console.ResetColor();
+            Console.Write("¿Está seguro? (S/N): ");
+
+            if (Console.ReadLine()?.ToUpper() != "S")
+            {
+                Console.WriteLine("❌ Operación cancelada.");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.WriteLine();
+            Console.Write("📄 Eliminando sucursal");
+            for (int i = 0; i < 3; i++)
+            {
+                Console.Write(".");
+                await Task.Delay(300);
+            }
+            Console.WriteLine();
+
+            var resultado = await servicioSucursalesRestDotNet.EliminarSucursal(codigo);
+
+            if (resultado.Exito)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"✅ {resultado.Mensaje}");
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"❌ {resultado.Mensaje}");
+                Console.ResetColor();
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Presione cualquier tecla para continuar...");
+            Console.ReadKey();
+        }
+
+        static async Task CalcularDistanciaEntreSucursalesRestDotNet()
+        {
+            Console.Clear();
+            MostrarEncabezado("📏 CALCULAR DISTANCIA ENTRE SUCURSALES");
+
+            Console.Write("Ingrese el código de la primera sucursal: ");
+            string? sucursal1 = Console.ReadLine();
+
+            Console.Write("Ingrese el código de la segunda sucursal: ");
+            string? sucursal2 = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(sucursal1) || string.IsNullOrWhiteSpace(sucursal2))
+            {
+                Console.WriteLine("❌ Códigos de sucursal inválidos.");
+                Console.ReadKey();
+                return;
+            }
+
+            if (sucursal1 == sucursal2)
+            {
+                Console.WriteLine("❌ Los códigos de sucursal no pueden ser iguales.");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.WriteLine();
+            Console.Write("📏 Calculando distancia");
+            for (int i = 0; i < 3; i++)
+            {
+                Console.Write(".");
+                await Task.Delay(300);
+            }
+            Console.WriteLine();
+
+            var resultado = await servicioSucursalesRestDotNet!.CalcularDistanciaEntreSucursales(sucursal1, sucursal2);
+
+            if (resultado.Exito && resultado.Data is DistanciaResponse distancia)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"✅ {resultado.Mensaje}");
+                Console.WriteLine();
+                Console.WriteLine($"📍 Desde: {distancia.SucursalOrigen}");
+                Console.WriteLine($"📍 Hacia: {distancia.SucursalDestino}");
+                Console.WriteLine($"📏 Distancia: {distancia.Distancia:F2} km");
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"❌ {resultado.Mensaje}");
+                Console.ResetColor();
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Presione cualquier tecla para continuar...");
+            Console.ReadKey();
+        }
+
+        static async Task EncontrarSucursalMasCercanaRestDotNet()
+        {
+            Console.Clear();
+            MostrarEncabezado("🎯 ENCONTRAR SUCURSAL MÁS CERCANA");
+
+            Console.WriteLine("Ingrese su ubicación actual:");
+            Console.Write("🗺️  Latitud: ");
+            if (!double.TryParse(Console.ReadLine(), out double latitud))
+            {
+                Console.WriteLine("❌ Latitud inválida.");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.Write("🗺️  Longitud: ");
+            if (!double.TryParse(Console.ReadLine(), out double longitud))
+            {
+                Console.WriteLine("❌ Longitud inválida.");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.WriteLine();
+            Console.Write("🎯 Buscando sucursal más cercana");
+            for (int i = 0; i < 3; i++)
+            {
+                Console.Write(".");
+                await Task.Delay(300);
+            }
+            Console.WriteLine();
+
+            var resultado = await servicioSucursalesRestDotNet!.EncontrarSucursalMasCercana(latitud, longitud);
+
+            if (resultado.Exito && resultado.Data is SucursalConDistancia sucursalCercana)
+            {
+                var s = sucursalCercana.Sucursal;
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"✅ {resultado.Mensaje}");
+                Console.WriteLine();
+                Console.WriteLine("🏢 Sucursal más cercana:");
+                Console.WriteLine($"   📋 Código:    {s.Codigo}");
+                Console.WriteLine($"   🏢 Nombre:    {s.Nombre}");
+                Console.WriteLine($"   🌆 Ciudad:    {s.Ciudad}");
+                Console.WriteLine($"   📍 Dirección: {s.Direccion}");
+                Console.WriteLine($"   📞 Teléfono:  {s.Telefono}");
+                Console.WriteLine($"   📏 Distancia: {sucursalCercana.DistanciaKm:F2} km");
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"❌ {resultado.Mensaje}");
+                Console.ResetColor();
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Presione cualquier tecla para continuar...");
+            Console.ReadKey();
+        }
+
+        static async Task ObtenerDireccionesASucursalRestDotNet()
+        {
+            Console.Clear();
+            MostrarEncabezado("🗺️ DIRECCIONES PASO A PASO");
+
+            Console.WriteLine("📍 Ingrese su ubicación actual:");
+            Console.Write("🗺️  Latitud: ");
+            if (!double.TryParse(Console.ReadLine()?.Replace(",", "."), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double origenLat))
+            {
+                Console.WriteLine("❌ Latitud inválida.");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.Write("🗺️  Longitud: ");
+            if (!double.TryParse(Console.ReadLine()?.Replace(",", "."), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double origenLng))
+            {
+                Console.WriteLine("❌ Longitud inválida.");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.WriteLine();
+            Console.Write("🏢 Ingrese el código de la sucursal destino: ");
+            string? codigoSucursal = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(codigoSucursal))
+            {
+                Console.WriteLine("❌ Código de sucursal inválido.");
+                Console.ReadKey();
+                return;
+            }
+
+            // Obtener datos de la sucursal
+            Console.WriteLine();
+            Console.Write("🔍 Buscando sucursal");
+            for (int i = 0; i < 3; i++)
+            {
+                Console.Write(".");
+                await Task.Delay(300);
+            }
+            Console.WriteLine();
+
+            var resultadoSucursal = await servicioSucursalesRestDotNet!.ObtenerSucursal(codigoSucursal);
+
+            if (!resultadoSucursal.Exito || resultadoSucursal.Data is not Sucursal sucursal)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"❌ Sucursal no encontrada: {resultadoSucursal.Mensaje}");
+                Console.ResetColor();
+                Console.ReadKey();
+                return;
+            }
+
+            // Solicitar modo de transporte
+            Console.WriteLine();
+            Console.WriteLine("🚗 Seleccione modo de transporte:");
+            Console.WriteLine("  1️⃣  Conduciendo (driving)");
+            Console.WriteLine("  2️⃣  Caminando (walking)");
+            Console.WriteLine("  3️⃣  Transporte público (transit)");
+            Console.WriteLine("  4️⃣  Bicicleta (bicycling)");
+            Console.Write("Seleccione una opción (1-4): ");
+
+            string modo = "driving";
+            if (int.TryParse(Console.ReadLine(), out int modoOpcion))
+            {
+                modo = modoOpcion switch
+                {
+                    1 => "driving",
+                    2 => "walking",
+                    3 => "transit",
+                    4 => "bicycling",
+                    _ => "driving"
+                };
+            }
+
+            string modoTexto = modo switch
+            {
+                "driving" => "🚗 Conduciendo",
+                "walking" => "🚶‍♂️ Caminando",
+                "transit" => "🚌 Transporte público",
+                "bicycling" => "🚴‍♂️ En bicicleta",
+                _ => "🚗 Conduciendo"
+            };
+
+            Console.WriteLine();
+            Console.Write("🗺️ Calculando ruta");
+            for (int i = 0; i < 3; i++)
+            {
+                Console.Write(".");
+                await Task.Delay(500);
+            }
+            Console.WriteLine();
+
+            var ruta = await serviceDireccionesRestDotNet!.ObtenerDireccionesASucursal(codigoSucursal, origenLat, origenLng);
+
+            Console.Clear();
+            MostrarEncabezado($"🗺️ RUTA A SUCURSAL");
+
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("📋 INFORMACIÓN DE LA RUTA");
+            Console.WriteLine("══════════════════════════");
+            Console.ResetColor();
+
+            Console.WriteLine($"🏢 Destino:     {sucursal.Nombre} - {sucursal.Ciudad}");
+            Console.WriteLine($"📍 Dirección:   {sucursal.Direccion}");
+            Console.WriteLine($"📏 Distancia:   {ruta.DistanciaTotal}");
+            Console.WriteLine($"⏱️ Tiempo:      {ruta.TiempoTotal}");
+            Console.WriteLine($"🚗 Transporte:  {modoTexto}");
+
+            if (!GoogleDirectionsRestDotNetService.IsApiKeyConfigured())
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("⚠️ Usando cálculos básicos (sin Google Directions API)");
+                Console.WriteLine("   Para direcciones detalladas, configure Google API Key");
+                Console.ResetColor();
+            }
+
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("🧭 DIRECCIONES PASO A PASO");
+            Console.WriteLine("═══════════════════════════");
+            Console.ResetColor();
+
+            foreach (var paso in ruta.Pasos)
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write($"{paso.Maniobra} {paso.Numero}. ");
+                Console.ResetColor();
+                Console.WriteLine($"{paso.Instruccion}");
+
+                if (!string.IsNullOrEmpty(paso.Distancia) && !string.IsNullOrEmpty(paso.Tiempo))
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.WriteLine($"     📏 {paso.Distancia} • ⏱️ {paso.Tiempo}");
+                    Console.ResetColor();
+                }
+            }
+
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"✅ ¡Has llegado a {sucursal.Nombre}!");
+            Console.ResetColor();
+
+            Console.WriteLine();
+            Console.WriteLine("🔗 Enlaces útiles:");
+            Console.WriteLine($"📱 Google Maps: https://maps.google.com/maps?daddr={sucursal.Latitud},{sucursal.Longitud}");
+            Console.WriteLine($"📞 Teléfono: {sucursal.Telefono}");
+
+            Console.WriteLine();
+            Console.WriteLine("Presione cualquier tecla para continuar...");
+            Console.ReadKey();
         }
     }
 }

@@ -18,9 +18,16 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Registrar HttpClient para servicios externos
+
+builder.Services.AddHttpClient();
+
 // Registrar servicios de negocio
 builder.Services.AddScoped<IEurekaService, EurekaService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<ISucursalService, SucursalService>();
+builder.Services.AddScoped<GoogleMapsService>();
+
 
 // Configurar CORS (acceso desde web)
 builder.Services.AddCors(options =>
